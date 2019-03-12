@@ -1,0 +1,38 @@
+{{ "<!-- Portfolio Modals -->" | safeHTML }}
+{{- $pathURL := "/projects" -}}
+{{- $path := "/content/projects" -}}
+{{- $files := readDir $path -}}
+{{ $.Scratch.Set "counter" 0 }}
+{{ range $files }}
+	{{ $pathData := printf "%s/%s" $path .Name }}
+	{{ $urlData := printf "%s/%s" $pathURL .Name }}
+	{{ $data := getJSON (printf "%s/setting.json" $pathData) }}
+	{{ $.Scratch.Set "counter" (add ($.Scratch.Get "counter") 1) }}
+  <div class="portfolio-modal modal fade" id="portfolioModal{{$.Scratch.Get "counter"}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-content">
+      <div class="close-modal" data-dismiss="modal">
+        <div class="lr">
+          <div class="rl">
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2">
+            <div class="modal-body">
+              <h2>{{ $data.title  | markdownify }}</h2>
+              <p class="item-intro text-muted">{{ $data.subtitle | markdownify }}</p>
+              <p>{{ $data.description | markdownify }}</p>
+			  {{ $images := readDir (printf "%s/gallery" $pathData) }}
+			  {{ range $images }}
+				{{ $url := printf "%s/gallery/%s" $urlData .Name }}
+				<img class="img-responsive img-centered" src="{{ $url | absURL }}" alt="">
+			  {{ end }}
+			<button type="button" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-times"></i> {{ with $.Site.Params.portfolio.modal.buttonText }}{{ . }}{{ end }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}
